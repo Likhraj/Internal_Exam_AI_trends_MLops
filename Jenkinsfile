@@ -8,8 +8,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo 'Building the Docker image...'
-                    bat 'docker build -t likhraj/mlproject:latest .'
+                    echo 'Pushing build docker image...'
+                    bat 'docker push likhraj/mlproject:tagname'
                 }
             }
         }
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests...'
-                    bat 'python test.py'
+                    bat 'python model.py' // Assuming 'model.py' is your test script
                 }
             }
         }
