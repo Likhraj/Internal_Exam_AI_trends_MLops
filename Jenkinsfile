@@ -18,9 +18,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker build -t my_ml_image .'
-                    sh 'docker tag mlproject:latest likhraj/mlproject:latest'
-                    sh 'docker push likhraj/my_ml_image'
+                    sh 'docker build -t mlproject2 .'
+                    sh 'docker tag mlproject2:latest likhraj/mlproject2:latest'
+                    sh 'docker push likhraj/mlproject2'
                 }
             }
         }
