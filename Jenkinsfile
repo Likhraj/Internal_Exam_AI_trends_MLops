@@ -1,50 +1,33 @@
-pipeline {
-    agent any
-    environment {
-        DOCKERHUB_USERNAME = credentials('dockerhub-likhraj') 
-        DOCKERHUB_PASSWORD = credentials('dockerhub-Docker@2001')
+node {
+    def app
+
+    stage('Clone repository') {
+        /* Cloning the repository into the workspace */
+        checkout scm
     }
-    stages {
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    echo 'Building Docker image...'
-                    bat 'docker build -t kidney-classification-app .'
-                }
-            }
-        }
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    echo 'Running Docker container...'
-                    bat 'docker run -d -p 8501:8501 kidney-classification-app'
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                script {
-                    echo 'Running tests...'
-                    bat 'python app.py' // Assuming 'model.py' is your test script
-                }
-            }
-        }
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                script {
-                    echo 'Logging in to Docker Hub...'
-                    bat 'echo %DOCKERHUB_PASSWORD% | docker login -u %DOCKERHUB_USERNAME% --password-stdin'
-                    
-                    echo 'Pushing the Docker image to Docker Hub...'
-                    bat 'docker tag kidney-classification-app likhraj/mlproject:latest'
-                    bat 'docker push likhraj/mlproject:latest'
-                }
-            }
+
+    stage('Build Docker Image') {
+        /* Building the Docker image */
+        app = docker.build("kidney-classification-app", "-f Dockerfile .")
+    }
+
+    stage('Run Docker Container') {
+        /* Running the Docker container */
+        app.run("-d -p 8501:8501")
+    }
+
+    stage('Test image') {
+        /* Running tests inside the Docker container */
+        app.inside {
+            sh 'python model.py'  // Replace with your actual test script if different
         }
     }
-    post {
-        always {
-            cleanWs()
+
+    stage('Push Docker Image') {
+        /* Pushing the Docker image to Docker Hub */
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-likhraj') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
         }
     }
 }
