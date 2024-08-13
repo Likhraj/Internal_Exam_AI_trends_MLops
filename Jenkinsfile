@@ -5,11 +5,19 @@ pipeline {
         DOCKERHUB_PASSWORD = credentials('dockerhub-Docker@2001')
     }
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Pushing build docker image...'
-                    bat 'docker push likhraj/mlproject:tagname'
+                    echo 'Building Docker image...'
+                    bat 'docker build -t kidney-classification-app -f Dockerfile .'
+                }
+            }
+        }
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    echo 'Running Docker container...'
+                    bat 'docker run -d -p 8501:8501 kidney-classification-app'
                 }
             }
         }
@@ -21,14 +29,22 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                    echo 'Pushing the Docker image to Docker Hub...'
+                    echo 'Logging in to Docker Hub...'
                     bat 'echo %DOCKERHUB_PASSWORD% | docker login -u %DOCKERHUB_USERNAME% --password-stdin'
+                    
+                    echo 'Pushing the Docker image to Docker Hub...'
+                    bat 'docker tag kidney-classification-app likhraj/mlproject:latest'
                     bat 'docker push likhraj/mlproject:latest'
                 }
             }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
