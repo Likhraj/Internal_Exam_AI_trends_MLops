@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running tests...'
-                    bat 'python model.py' // Assuming 'model.py' is your test script
+                    bat 'python app.py' // Assuming 'model.py' is your test script
                 }
             }
         }
