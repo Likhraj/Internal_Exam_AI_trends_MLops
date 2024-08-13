@@ -1,5 +1,5 @@
-numpy
 tensorflow
 pillow
 streamlit
-pandas
+reportlab
+protobuf
