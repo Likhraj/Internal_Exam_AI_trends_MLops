@@ -9,7 +9,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    bat 'docker build -t kidney-classification-app -f Dockerfile .'
+                    bat 'docker build -t kidney-classification-app .'
                 }
             }
         }
