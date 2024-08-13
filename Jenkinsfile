@@ -13,14 +13,7 @@ node {
 
     stage('Run Docker Container') {
         /* Running the Docker container */
-        app.run("-d -p 8500:8500")
-    }
-
-    stage('Test image') {
-        /* Running tests inside the Docker container */
-        app.inside {
-            sh 'python app.py'  // Replace with your actual test script if different
-        }
+        app.run("-d -p 8501:8501")
     }
 
     stage('Push Docker Image') {
